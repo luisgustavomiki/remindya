@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  persistence:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: agenda
+    ports:
+      - 27017:27017
+    volumes:
+      - persistence_data:/data/db
+  application:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on: 
+      - persistence
+volumes:
+  persistence_data:

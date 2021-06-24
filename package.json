@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "tsc"
   },
   "repository": {
@@ -19,13 +19,16 @@
   },
   "homepage": "https://github.com/luisgustavomiki/remindya#readme",
   "devDependencies": {
+    "@types/jest": "^26.0.23",
     "@types/ws": "^7.4.5",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^27.0.5",
     "prettier": "^2.3.1",
+    "ts-jest": "^27.0.3",
     "typescript": "^4.3.4"
   },
   "dependencies": {

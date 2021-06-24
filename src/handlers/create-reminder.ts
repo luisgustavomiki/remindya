@@ -18,6 +18,10 @@ export class CreateReminderHandler {
       return { success: false, message: 'Invalid format for target.' };
     }
 
+    if (isNaN(new Date(data['target']).getTime())) {
+      return { success: false, message: 'Invalid target.' };
+    }
+
     if (!isString(data['message'])) {
       return { success: false, message: 'Invalid format for message.' };
     }

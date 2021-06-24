@@ -7,7 +7,7 @@ import { isDate, isObject, isString } from '../utils/parse';
 export class BroadcastReminderHandler {
   constructor(private reminderService: ReminderService) {}
 
-  async execute(data: unknown): Promise<Result> {
+  execute(data: unknown): Result {
     console.info('BroadcastReminderHandler received payload %o', data);
 
     if (!isObject(data)) {
@@ -28,7 +28,7 @@ export class BroadcastReminderHandler {
     console.info('Handler: to broadcast reminder %o.', { target, message });
 
     try {
-      await this.reminderService.broadcast({ target, message });
+      this.reminderService.broadcast({ target, message });
     } catch {
       return { success: false, message: 'Unable to broadcast reminder.' };
     }

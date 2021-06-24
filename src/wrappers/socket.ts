@@ -2,14 +2,14 @@ import { Service } from 'typedi';
 import WebSocket from 'ws';
 
 @Service()
-export class Handler {
+export class Socket {
   public readonly port: number;
   private wss?: WebSocket.Server;
-  private actions: Map<string, (...args: unknown[]) => unknown>;
+  private handlers: Map<string, (...args: unknown[]) => unknown>;
 
   constructor() {
     this.port = 8080;
-    this.actions = new Map();
+    this.handlers = new Map();
   }
 
   boostrap(): void {
@@ -17,8 +17,12 @@ export class Handler {
     this.wss.on('connection', this.connection.bind(this));
   }
 
-  action(action: string, cb: (...args: unknown[]) => unknown): void {
-    this.actions.set(action, cb);
+  addHandler(action: string, cb: (...args: unknown[]) => unknown): void {
+    this.handlers.set(action, cb);
+  }
+
+  broadcast(data: unknown): void {
+    this.wss?.clients.forEach((client) => client.send(data));
   }
 
   private connection(ws: WebSocket): void {
@@ -29,11 +33,16 @@ export class Handler {
   private message(_ws: WebSocket, data: WebSocket.Data): void {
     console.log('new message: %s', data);
 
-    const payload = JSON.parse(data.toString());
-    const cb = this.actions.get(payload.action);
+    try {
+      const payload = JSON.parse(data.toString());
+      const cb = this.handlers.get(payload.action);
 
-    if (cb) {
-      cb(payload.body);
+      if (cb) {
+        const ret = cb(payload.body);
+        console.log(ret);
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 }

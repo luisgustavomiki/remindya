@@ -1,15 +1,20 @@
 import 'reflect-metadata';
 import Container from 'typedi';
-import { CreateReminderAction } from './actions/create-reminder';
-import { Handler } from './handler';
-import { Scheduler } from './scheduler';
+import { BroadcastReminderHandler } from './handlers/broadcast-reminder';
+import { CreateReminderHandler } from './handlers/create-reminder';
+import { Scheduler } from './wrappers/scheduler';
+import { Socket } from './wrappers/socket';
 
 (async function bootstrap() {
-  const handler = Container.get(Handler);
-  handler.boostrap();
+  const socket = Container.get(Socket);
+  socket.boostrap();
 
   const scheduler = Container.get(Scheduler);
   await scheduler.bootstrap();
 
-  handler.action('create-reminder', Container.get(CreateReminderAction).execute);
+  const crh = Container.get(CreateReminderHandler);
+  const brh = Container.get(BroadcastReminderHandler);
+
+  socket.addHandler('create-reminder', crh.execute.bind(crh));
+  scheduler.addHandler(brh.execute.bind(brh));
 })();

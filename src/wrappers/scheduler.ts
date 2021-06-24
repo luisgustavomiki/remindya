@@ -5,9 +5,11 @@ import { Service } from 'typedi';
 export class Scheduler {
   private readonly connectionString: string;
   private agenda?: Agenda;
+  private handlers: Array<(...args: unknown[]) => unknown>;
 
   constructor() {
-    this.connectionString = 'mongodb://root:rootpassword@persistence/agenda';
+    this.connectionString = 'mongodb://root:rootpassword@persistence/agenda?authSource=admin';
+    this.handlers = [];
   }
 
   async bootstrap(): Promise<void> {
@@ -20,7 +22,12 @@ export class Scheduler {
     await this.agenda?.schedule(when, 'ring', data);
   }
 
+  addHandler(handler: (...args: unknown[]) => unknown): void {
+    this.handlers.push(handler);
+  }
+
   private ring(job: Job<JobAttributesData>): void {
     console.log('ring %s', job.attrs.data);
+    this.handlers.forEach((handler) => handler(job.attrs.data));
   }
 }
